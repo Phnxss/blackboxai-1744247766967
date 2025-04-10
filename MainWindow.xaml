@@ -1,0 +1,206 @@
+<Window x:Class="NeronSettings.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Neron Settings" Height="600" Width="1000"
+        Background="#1a1b26">
+    <Window.Resources>
+        <!-- Animations -->
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="0" To="1" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- Styles -->
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#8890b3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2a2b36"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3a3b46"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border" Width="40" Height="20" CornerRadius="10" Background="#2a2b36">
+                            <Border x:Name="slider" Width="16" Height="16" CornerRadius="8" 
+                                    Background="#8890b3" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="transform" X="0"/>
+                                </Border.RenderTransform>
+                            </Border>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetName="transform" 
+                                                Storyboard.TargetProperty="X"
+                                                To="20" Duration="0:0:0.2">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <ColorAnimation 
+                                                Storyboard.TargetName="slider"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#7c5cff" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetName="transform" 
+                                                Storyboard.TargetProperty="X"
+                                                To="0" Duration="0:0:0.2">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <ColorAnimation 
+                                                Storyboard.TargetName="slider"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#8890b3" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Menu -->
+        <Border Background="#13141f" Padding="10">
+            <StackPanel>
+                <TextBlock Text="NERON" Foreground="#7c5cff" FontSize="24" Margin="15,10,0,30"/>
+                
+                <TextBlock Text="GENERAL" Foreground="#4a4b56" Margin="15,0,0,10"/>
+                <Button Content="Basic Settings" Style="{StaticResource MenuButtonStyle}" Click="OnBasicSettingsClick"/>
+                <Button Content="Accessibility" Style="{StaticResource MenuButtonStyle}" Click="OnAccessibilityClick"/>
+                
+                <TextBlock Text="VISUALIZATION" Foreground="#4a4b56" Margin="15,20,0,10"/>
+                <Button Content="Display Settings" Style="{StaticResource MenuButtonStyle}" Click="OnDisplaySettingsClick"/>
+                <Button Content="Profile Management" Style="{StaticResource MenuButtonStyle}" Click="OnProfileManagementClick"/>
+                
+                <TextBlock Text="MISCELLANEOUS" Foreground="#4a4b56" Margin="15,20,0,10"/>
+                <Button Content="Advanced Parameters" Style="{StaticResource MenuButtonStyle}" Click="OnAdvancedParametersClick"/>
+                <Button Content="Data Sync &amp; Backup" Style="{StaticResource MenuButtonStyle}" Click="OnDataSyncClick"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Content Area -->
+        <Grid Grid.Column="1" x:Name="ContentArea">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="ContentTransform"/>
+            </Grid.RenderTransform>
+
+            <!-- Basic Settings -->
+            <StackPanel x:Name="BasicSettingsPanel" Margin="30">
+                <TextBlock Text="Basic Settings" Foreground="White" FontSize="24" Margin="0,0,0,10"/>
+                <TextBlock Text="Here are the main configuration parameters for the application or system." 
+                         Foreground="#8890b3" Margin="0,0,0,30"/>
+
+                <StackPanel>
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Enable autostart on system boot" Foreground="White"/>
+                            <TextBlock Text="Application will start automatically when system boots" 
+                                     Foreground="#8890b3" FontSize="12"/>
+                        </StackPanel>
+                        <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonStyle}"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Show popup notifications" Foreground="White"/>
+                            <TextBlock Text="Display system notifications when events occur" 
+                                     Foreground="#8890b3" FontSize="12"/>
+                        </StackPanel>
+                        <ToggleButton Grid.Column="1" Style="{StaticResource ToggleButtonStyle}"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Interface Language" Foreground="White"/>
+                            <TextBlock Text="Select your preferred language" 
+                                     Foreground="#8890b3" FontSize="12"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1" SelectedIndex="0" Background="#2a2b36" Foreground="White" BorderThickness="0">
+                            <ComboBoxItem Content="English"/>
+                            <ComboBoxItem Content="Spanish"/>
+                            <ComboBoxItem Content="French"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Theme" Foreground="White"/>
+                            <TextBlock Text="Choose application theme" 
+                                     Foreground="#8890b3" FontSize="12"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1" SelectedIndex="0" Background="#2a2b36" Foreground="White" BorderThickness="0">
+                            <ComboBoxItem Content="System"/>
+                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Dark"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
